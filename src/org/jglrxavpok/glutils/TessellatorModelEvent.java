@@ -1,6 +1,6 @@
 package org.jglrxavpok.glutils;
 
-import net.minecraftforge.event.Event;
+import cpw.mods.fml.common.eventhandler.Event;
 
 public class TessellatorModelEvent extends Event
 {
