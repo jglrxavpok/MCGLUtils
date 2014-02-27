@@ -14,7 +14,7 @@ public class TessellatorModelEvent extends Event
 		}
 
 	}
-
+	
 	public TessellatorModel model;
 
 	public TessellatorModelEvent(TessellatorModel model)
@@ -25,7 +25,21 @@ public class TessellatorModelEvent extends Event
 	public static class RenderGroupEvent extends TessellatorModelEvent
 	{
 
-		public String group;
+	    public static class MaterialUnapplyEvent extends RenderGroupEvent
+        {
+
+            public GLMaterial material;
+            public GL_Triangle triangle;
+
+            public MaterialUnapplyEvent(TessellatorModel model, String group, GLMaterial mtl, GL_Triangle t)
+            {
+                super(group, model);
+                this.material = mtl;
+                this.triangle = t;
+            }
+        }
+
+        public String group;
 
 		public RenderGroupEvent(String groupName, TessellatorModel model)
 		{
@@ -33,6 +47,21 @@ public class TessellatorModelEvent extends Event
 			this.group = groupName;
 		}
 
+        public static class MaterialApplyEvent extends RenderGroupEvent
+        {
+
+            public GLMaterial material;
+            public GL_Triangle triangle;
+
+            public MaterialApplyEvent(TessellatorModel model, String group, GLMaterial mtl, GL_Triangle t)
+            {
+                super(group, model);
+                this.material = mtl;
+                this.triangle = t;
+            }
+        }
+        
+        
 		public static class Pre extends RenderGroupEvent
 		{
 			public Pre(String g, TessellatorModel m)

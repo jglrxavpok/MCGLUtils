@@ -126,23 +126,28 @@ public class GLMaterialLib {
     				else if (line.startsWith("map_Kd")) {
     					// map_Kd filename
     					// add a texture to the material
-    					String textureFile = line.substring(7);
-    			        if (textureFile != null && !textureFile.equals("")) {
-        					int textureHandle = 0;
-    			        	try {
-    					    	textureHandle = GLUtils.makeTexture(filepath + textureFile);
-    			        	}
-    			        	catch (Exception e) {
-    			        		System.out.println("GLMaterialLib.loadMaterials(): could not load texture file (" +line+ ")" + e);
-    			        	}
-        					material.setTextureFile(textureFile);
-        					material.setTexture(textureHandle);
-    			        }
+    				    if(line.length() >= 8)
+    				    {
+        					String textureFile = line.substring(7);
+        			        if (textureFile != null && !textureFile.equals("")) {
+            					int textureHandle = 0;
+        			        	try {
+        					    	textureHandle = GLUtils.makeTexture(filepath + textureFile);
+        			        	}
+        			        	catch (Exception e) {
+        			        		System.out.println("GLMaterialLib.loadMaterials(): could not load texture file (" +line+ ")" + e);
+        			        		e.printStackTrace();
+        			        	}
+            					material.setTextureFile(textureFile);
+            					material.setTexture(textureHandle);
+        			        }
+    				    }
     				}
     			}
     		}
     	} catch (Exception e) {
     		System.out.println("GLMaterialLib.loadMaterials() failed at line: " + line);
+    		e.printStackTrace();
     	}
     	// debug:
     	System.out.println("GLMaterialLib.loadMaterials(): loaded " + mtlslist.size() + " materials ");
