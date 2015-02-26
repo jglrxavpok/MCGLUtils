@@ -13,7 +13,7 @@ import org.lwjgl.opengl.GL11;
  * materials. The entire mesh will be drawn as one group of triangles with one
  * texture.
  */
-public class GLModel
+public class GLModel extends Model
 {
 	// a default material to use if none is specified
 	public static GLMaterial defaultMtl = new GLMaterial();
@@ -32,6 +32,11 @@ public class GLModel
 	{
 		// load OBJ file
 		mesh = loadMesh(filename);
+	}
+	
+	public void renderGroups(String group)
+	{
+	    renderGroup(group);
 	}
 
 	/**
@@ -305,13 +310,4 @@ public class GLModel
 		GL11.glEnable(GL11.GL_LIGHTING);
 	}
 
-	public void setID(String id)
-	{
-		this.id = id;
-	}
-	
-	public String getID()
-	{
-		return id;
-	}
 }
