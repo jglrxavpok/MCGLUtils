@@ -1,5 +1,6 @@
 package org.jglrxavpok.glutils;
 
+
 public abstract class Model
 {
 
