@@ -8,12 +8,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldRenderer;
-import net.minecraft.util.Vec3;
-import net.minecraftforge.fml.common.eventhandler.Event;
-import net.minecraftforge.fml.common.eventhandler.EventBus;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.vector.Vector3f;
 
 import org.jglrxavpok.glutils.IndexedModel;
 import org.jglrxavpok.glutils.Mesh;
@@ -25,8 +21,14 @@ import org.jglrxavpok.glutils.ObjModel;
 import org.jglrxavpok.glutils.ObjObject;
 import org.jglrxavpok.glutils.TessellatorModelEvent;
 import org.jglrxavpok.glutils.Vertex;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.vector.Vector3f;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.util.math.Vec3d;
+import net.minecraftforge.fml.common.eventhandler.Event;
+import net.minecraftforge.fml.common.eventhandler.EventBus;
 
 /**
  * @author jglrxavpok
@@ -71,9 +73,9 @@ public class TessellatorModel extends ObjModel
             @Override
             public int compare(ObjObject a, ObjObject b)
             {
-                Vec3 v = Minecraft.getMinecraft().getRenderViewEntity().getPositionVector();
-                double aDist = v.distanceTo(new Vec3(a.center.x, a.center.y, a.center.z));
-                double bDist = v.distanceTo(new Vec3(b.center.x, b.center.y, b.center.z));
+                Vec3d v = Minecraft.getMinecraft().getRenderViewEntity().getPositionVector();
+                double aDist = v.distanceTo(new Vec3d(a.center.x, a.center.y, a.center.z));
+                double bDist = v.distanceTo(new Vec3d(b.center.x, b.center.y, b.center.z));
                 return Double.compare(aDist, bDist);
             }
         });
@@ -99,7 +101,8 @@ public class TessellatorModel extends ObjModel
     public void renderGroupImpl(ObjObject obj)
     {
         Tessellator tess = Tessellator.getInstance();
-        WorldRenderer renderer = tess.getWorldRenderer();
+       // WorldRenderer renderer = tess.getWorldRenderer();
+        VertexBuffer renderer = tess.getBuffer();
         if(obj.mesh == null)
             return;
         Vector3f color = new Vector3f(1, 1, 1);
@@ -114,7 +117,7 @@ public class TessellatorModel extends ObjModel
         }
         int[] indices = obj.mesh.indices;
         Vertex[] vertices = obj.mesh.vertices;
-        renderer.startDrawing(GL_TRIANGLES);
+        renderer.begin(GL11.GL_TRIANGLES, DefaultVertexFormats.POSITION_TEX_NORMAL);
         for(int i = 0; i < indices.length; i += 3)
         {
             int i0 = indices[i];
@@ -123,17 +126,12 @@ public class TessellatorModel extends ObjModel
             Vertex v0 = vertices[i0];
             Vertex v1 = vertices[i1];
             Vertex v2 = vertices[i2];
-            renderer.setColorRGBA_F(color.x, color.y, color.z, alpha);
-            renderer.setNormal(v0.getNormal().x, v0.getNormal().y, v0.getNormal().z);
-            renderer.addVertexWithUV(v0.getPos().x, v0.getPos().y, v0.getPos().z, v0.getTexCoords().x, 1f - v0.getTexCoords().y);
-
-            renderer.setNormal(v1.getNormal().x, v1.getNormal().y, v1.getNormal().z);
-            renderer.addVertexWithUV(v1.getPos().x, v1.getPos().y, v1.getPos().z, v1.getTexCoords().x, 1f - v1.getTexCoords().y);
-
-            renderer.setNormal(v2.getNormal().x, v2.getNormal().y, v2.getNormal().z);
-            renderer.addVertexWithUV(v2.getPos().x, v2.getPos().y, v2.getPos().z, v2.getTexCoords().x, 1f - v2.getTexCoords().y);
+            
+            renderer.pos(v0.getPos().x, v0.getPos().y, v0.getPos().z).tex(v0.getTexCoords().x, 1f - v0.getTexCoords().y).normal(v0.getNormal().x, v0.getNormal().y, v0.getNormal().z).endVertex();
+            renderer.pos(v1.getPos().x, v1.getPos().y, v1.getPos().z).tex(v1.getTexCoords().x, 1f - v1.getTexCoords().y).normal(v1.getNormal().x, v1.getNormal().y, v1.getNormal().z).endVertex();
+            renderer.pos(v2.getPos().x, v2.getPos().y, v2.getPos().z).tex(v2.getTexCoords().x, 1f - v2.getTexCoords().y).normal(v2.getNormal().x, v2.getNormal().y, v2.getNormal().z).endVertex();
         }
-        renderer.finishDrawing();
+        tess.draw();
     }
 
     @Override
